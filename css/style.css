@@ -32,7 +32,6 @@ html, body{
     margin: 28px 0 20px;
 }
 
-
 .tabs__item{
     padding: 10px 15px;
     border: 1px solid rgba(30, 10, 60, 0.12);
@@ -51,14 +50,8 @@ html, body{
     color: #735cc6;
 }
 
-.tabs__item:active{
-    background: #e0e5f9;
-    border-color: #735cc6;
-    color: #5d47aa;
-}
-
 .tabs__item--active{
-    background: #efaaff;
+    background: #efeaff;
     border-color: #cfc6f5;
     color: #735cc6;
 }
@@ -133,6 +126,19 @@ html, body{
     color: #9b96a6;
 }
 
+
+.form-add__input:hover,
+.toolbar__search:hover {
+    border-color: rgba(30, 10, 60, 0.2);
+} 
+
+.form-add__input:focus,
+.toolbar__search:focus {
+    outline: none;
+    border-color: #7e66cd;
+    box-shadow: 0 0 0 3px rgba(126, 102, 205, 0.28);
+}
+
 .form-add__button {
     padding: 12px 45px;
     border-radius: 8px;
@@ -153,3 +159,36 @@ html, body{
     linear-gradient(#f6f3f9, #fbfaf8);
   background-attachment: fixed;
 }
+
+
+.task{
+    padding: 10px 12px;
+    border: 1px solid rgba(30, 10, 60, 0.12);
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.task__title{
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #221c2a;
+}
+
+.task__meta{
+    font-size: 12px;
+    color: #8a8398;
+}
+
+
+.task__actions{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
