@@ -1,73 +1,115 @@
 
 
-// let amount = 3200; 
+const input = document.querySelector(".form-add__input");
+const addButton = document.querySelector(".form-add__button");
+const container = document.querySelector(".tasks");
 
-// if (amount === 0) {
-//   console.log("Корзина пуста");
-// } else if (amount < 1000) {
-//   console.log("Скидка не применяется");
-// } else if (amount < 5000) {
-//   console.log("Скидка 5%");
-// } else {
-//   console.log("Скидка 10%");
-// }
+const searchInput = document.querySelector(".toolbar__search");
+const footer = document.querySelector(".footer-controls");
+const sortSelect = document.querySelector(".toolbar__sort");
 
+function renderTask(task) {
+  const item = document.createElement("div");
+  item.classList.add("task");
 
+  const content = document.createElement("div");
+  content.classList.add("task__content");
 
+  const title = document.createElement("div");
+  title.classList.add("task__title");
+  title.textContent = task.text;
 
+  const meta = document.createElement("div");
+  meta.classList.add("task__meta");
+  meta.textContent = task.date;
+  content.append(title, meta);
 
+  const actions = document.createElement("div");
+  actions.classList.add("task__actions");
 
-function sum(a, b){
-  return a + b
+  const editBtn = document.createElement("button");
+  editBtn.classList.add("task__action", "task__action--edit");
+  editBtn.innerHTML = `
+<svg
+              class="task__icon"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="#6f64a3"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 20h9" />
+              <path
+                d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+              />
+            </svg>
+`;
+
+  editBtn.addEventListener('click', () => {
+    const newText = prompt('Изменить задачу:', task.text);
+    if (newText && newText.trim() !== '') {
+      task.text = newText.trim();
+      renderAll();
+    }
+  });
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.classList.add("task__action", "task__action--delete");
+  deleteBtn.innerHTML = `
+<svg
+              class="task__icon"
+              viewBox="0 0 24 24"
+              width="14 "
+              height="14"
+              fill="none"
+              stroke="#cb6e6e"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+              <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+            </svg>`;
+
+  deleteBtn.addEventListener("click", () => {
+    const index = tasks.indexOf(task);
+    tasks.splice(index, 1);
+
+    renderAll()
+  });
+
+  actions.append(editBtn, deleteBtn);
+  item.append(content, actions);
+
+  if (task.done) {
+    item.classList.add("task--done");
+  }
+
+  item.addEventListener("click", (event) => {
+    console.log(event.target);
+    if (event.target.closest(".task__action")) return;
+    task.done = !task.done;
+    renderAll()
+  });
+
+  return item;
 }
 
-// console.log(sum(3, 4));
-// console.log(sum(10, 5));
 
-function isTaskDone(status){
-  return status === "выполнена"
-}
 
-// console.log(isTaskDone("выполнена"));
-
-function taskSummary(total, done){
-  let active = total - done
-  return "Всего: " + total + " | Выполнено: " + done + " | Активных: " + active
+function renderAll() {
+  document.querySelectorAll(".task").forEach(t => t.remove())
+  tasks.forEach((task) => {
+    const card = renderTask(task)
+    footer.before(card)
+  });
 }
 
 
-let task1 = "Купить молоко";
-let task2 = "Позвонить врачу";
-let task3 = "Сделать уроки";
-
-let numbers = [5, 10, 15, 20];
-
-
-let objs = [42, "Привет", true]
-
-
-
-let cities = ["Тюмень", "Мурманск", "Юровка", "Пермь"]
-
-console.log(cities[2]);
-
-let task = {
-  id: 1,
-  title: "Вася во всём виноват!!!",
-  status: "активна"
-}
-
-console.log(task.status);
-
-
-let tasks = [
-  {id: 1, title: "Вася ни в чём не виноват(", status: "активна"},
-  {id: 2, title: "Позвонить психиатру", status: "выполнена"},
-  {id: 3, title: "Сдать Афину в психушку", staus: "активна"}
-]
-
-tasks.push({id: 4, title: "Прогулка", status: "активна"})
-
-console.log(tasks);
-
-console.log(task.title.length);
+renderAll()
