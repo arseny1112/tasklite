@@ -3,10 +3,54 @@
 const input = document.querySelector(".form-add__input");
 const addButton = document.querySelector(".form-add__button");
 const container = document.querySelector(".tasks");
+const form = document.querySelector('.form-add')
 
 const searchInput = document.querySelector(".toolbar__search");
 const footer = document.querySelector(".footer-controls");
 const sortSelect = document.querySelector(".toolbar__sort");
+let tasks = []
+
+
+
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault()
+  const text = input.value.trim()
+  if(text === '') return
+  addTask()
+
+  const newTask = {
+    id: tasks.length + 1,
+    text: text,
+    done: false,
+    date: formatDate(new Date())
+  }
+  tasks.push(newTask)
+})
+
+
+
+function addTask() {
+  const text = input.value.trim()
+
+  if (text === '' || text.length < 3) {
+    input.classList.add('input--error')
+    return
+  } else {
+    input.classList.remove('input--error')
+  }
+
+  const newTask = {
+    id: tasks.length + 1,
+    text,
+    done: false,
+    date: 'создана сейчас'
+  }
+  tasks.push(newTask)
+  input.value = ''
+  renderAll()
+
+}
 
 function renderTask(task) {
   const item = document.createElement("div");
@@ -103,15 +147,24 @@ function renderTask(task) {
 
 
 
+
 function renderAll() {
   document.querySelectorAll(".task").forEach(t => t.remove())
   tasks.forEach((task) => {
     const card = renderTask(task)
-    footer.before(card)
+    container.append(card)
+
   });
 }
 
 
 renderAll()
 
-const form = document
+function formatDate(date){
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+  const hour = date.getHours().toString().padStart(2, '0')
+  const min = date.getMinutes().toString().padStart(2, '0')
+  return `${day}.${month}.${year}, ${hour}:${min}`
+}
