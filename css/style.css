@@ -168,9 +168,10 @@ html, body{
     background: #fff;
     margin-bottom: 15px;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 8px;
+    flex-direction: column;
 }
 
 .task__title{
