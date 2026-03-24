@@ -4,11 +4,16 @@ const input = document.querySelector(".form-add__input");
 const addButton = document.querySelector(".form-add__button");
 const container = document.querySelector(".tasks");
 const form = document.querySelector('.form-add')
+const tabButtons = document.querySelectorAll('.tabs__item');
 
 const searchInput = document.querySelector(".toolbar__search");
 const footer = document.querySelector(".footer-controls");
 const sortSelect = document.querySelector(".toolbar__sort");
-let tasks = []
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
 
 
 
@@ -32,7 +37,9 @@ form.addEventListener('submit', (event) => {
   }
   tasks.push(newTask)
   input.value = ''
+  saveTasks()
   renderAll()
+  updateCounters()
 })
 
 function renderTask(task) {
@@ -79,7 +86,9 @@ function renderTask(task) {
     const newText = prompt('Изменить задачу:', task.text);
     if (newText && newText.trim() !== '') {
       task.text = newText.trim();
+      saveTasks()
       renderAll();
+      updateCounters();
     }
   });
 
@@ -107,8 +116,9 @@ function renderTask(task) {
   deleteBtn.addEventListener("click", () => {
     const index = tasks.indexOf(task);
     tasks.splice(index, 1);
-
+    saveTasks()
     renderAll()
+    updateCounters()
   });
 
   actions.append(editBtn, deleteBtn);
@@ -119,34 +129,61 @@ function renderTask(task) {
   }
 
   item.addEventListener("click", (event) => {
-    console.log(event.target);
     if (event.target.closest(".task__action")) return;
     task.done = !task.done;
+    saveTasks()
     renderAll()
+    updateCounters()
   });
 
   return item;
 }
 
 
+let currentFilter = 'all'
 
 
 function renderAll() {
   container.innerHTML = ''
-  
-  const sortedTasks = [...tasks].sort((a, b) => {
+
+  let filtered = tasks.filter(task => {
+    if (currentFilter === 'active') return !task.done;
+    if (currentFilter === 'done') return task.done;
+    return true;
+  });
+
+  const query = searchInput.value.trim().toLowerCase();
+  if (query) {
+    filtered = filtered.filter(task =>
+      task.text.toLowerCase().includes(query)
+    );
+  }
+
+let sortOrder = 'new';
+  const sortedTasks = [...filtered].sort((a, b) => {
     if(sortOrder === 'new') return b.id - a.id
     if(sortOrder === 'old') return a.id - b.id
     if(sortOrder === 'az') return a.text > b.text ? 1 : -1
     if(sortOrder === 'za') return a.text < b.text ? 1 : -1
     return a.id - b.id
   })
-  
   sortedTasks.forEach(task => {
     const card = renderTask(task)
     container.append(card)
   })
 }
+
+searchInput.addEventListener('input', renderAll);
+
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabButtons.forEach(b => b.classList.remove('tabs__item--active'));
+    btn.classList.add('tabs__item--active');
+      if (btn.textContent.includes('Активные')) currentFilter = 'active';
+        else if (btn.textContent.includes('Заверш')) currentFilter = 'done';
+        else currentFilter = 'all';
+  });
+});
 
 
 renderAll()
@@ -160,7 +197,6 @@ function formatDate(date){
   return `${day}.${month}.${year}, ${hour}:${min}`
 }
 
-let sortOrder = 'new';
 sortSelect.addEventListener('change', () => {
   const val = sortSelect.value
   if(val.includes('новые')) sortOrder = 'new'
@@ -169,3 +205,34 @@ sortSelect.addEventListener('change', () => {
   else if(val.includes('Z-A')) sortOrder = 'za'
   renderAll()
 })
+
+
+function updateCounters() {
+  const total = tasks.length;
+  const active = tasks.filter(t => !t.done).length;
+  const done = tasks.filter(t => t.done).length;
+
+  const clearButton = document.querySelector('.footer-controls__clear');
+  if (clearButton) {
+    clearButton.disabled = tasks.every(task => !task.done);
+  }
+
+  const counters = document.querySelector('.footer-controls__counters');
+  if (counters) {
+    counters.innerHTML = `
+      <span>Всего: ${total}</span>
+      <span>Активных: ${active}</span>
+      <span>Выполненных: ${done}</span>
+    `;
+  }
+}
+
+updateCounters();
+
+const clearButton = document.querySelector('.footer-controls__clear');
+clearButton.addEventListener('click', () => {
+  tasks = tasks.filter(task => !task.done);
+  saveTasks();
+  renderAll();
+  updateCounters();
+});
